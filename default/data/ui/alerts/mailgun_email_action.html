@@ -1,0 +1,68 @@
+<form>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">URL<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-input name="action.mailgun_email_action.param.url" id="mailgun_email_action_url" required />
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
+				Your Mailgun API endpoint for sending messages. This usually looks like https://api.mailgun.net/v3/yourdomain.com/messages
+			</span>
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">API Key<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-input name="action.mailgun_email_action.param.api_key" id="mailgun_email_action_api_key" required />
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">From<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-input name="action.mailgun_email_action.param.from" id="mailgun_email_action_from" required />
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
+				Can be in the format user@domain.com or User &lt;user@domain.com&gt;
+			</span>
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">To<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-area name="action.mailgun_email_action.param.to" id="mailgun_email_action_to" required />
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
+				Either an individual email or comma separated list of emails. Can be in the format user@domain.com or User &lt;user@domain.com&gt;
+			</span>
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">Email Type<span class="required">*</span> </label>
+		<div class="controls">
+			<select id="mailgun_email_action_email_type" name="action.mailgun_email_action.param.email_type" required >
+				<option value="html">HTML</option>
+				<option value="text">TEXT</option>
+			</select>
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">Subject<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-area name="action.mailgun_email_action.param.subject" id="mailgun_email_action_subject" required />
+		</div>
+	</div>
+	<div class='control-group'>
+		<label class="control-label" for="mailgun_email_action">Content<span class="required">*</span> </label>
+		<div class="controls">
+			<splunk-text-area name="action.mailgun_email_action.param.content" id="mailgun_email_action_content" required />
+		</div>
+	</div>
+</form>
