@@ -1,39 +1,57 @@
-import sys, requests, json, re
+import sys, requests, json, re, os
+import logging, logging.handlers
+import splunk
 
-def eprint(text):
-    print >> sys.stderr, text
 
-def check_inputs(config):
+def setup_logging():
+    logger = logging.getLogger('splunk.mailgun')
+    SPLUNK_HOME = os.environ['SPLUNK_HOME']
+    
+    LOGGING_DEFAULT_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'log.cfg')
+    LOGGING_LOCAL_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'log-local.cfg')
+    LOGGING_STANZA_NAME = 'python'
+    LOGGING_FILE_NAME = "mailgun.log"
+    BASE_LOG_PATH = os.path.join('var', 'log', 'splunk')
+    LOGGING_FORMAT = "%(asctime)s %(levelname)-s\t%(module)s:%(lineno)d - %(message)s"
+    splunk_log_handler = logging.handlers.RotatingFileHandler(os.path.join(SPLUNK_HOME, BASE_LOG_PATH, LOGGING_FILE_NAME), mode='a') 
+    splunk_log_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
+    logger.addHandler(splunk_log_handler)
+    splunk.setupSplunkLogger(logger, LOGGING_DEFAULT_CONFIG_FILE, LOGGING_LOCAL_CONFIG_FILE, LOGGING_STANZA_NAME)
+    return logger
+
+
+def check_inputs(config, logger):
     if 'url' in config:
         matched = re.match(r'https?:\/\/[^.]+\.[^.]+.*',config['url'])
         if not matched:
-            eprint("ERROR Invalid URL")
+            logger.error("Invalid URL")
             return False
     else:
-        eprint("ERROR No URL specified")
+        logger.error("No URL specified")
         return False
     if not 'api_key' in config:
-        eprint("ERROR No API key specified")
+        logger.error("No API key specified")
         return False
     if 'email_type' in config:
         if config['email_type']!="html" and config['email_type']!="text":
-            eprint("ERROR Invalid email type")
+            logger.error("Invalid email type")
             return False
     else:
-        eprint("ERROR No email type specified")
+        logger.error("No email type specified")
         return False
     if not 'to' in config:
-        eprint("ERROR No to email address specified")
+        logger.error("No to email address specified")
         return False
     if not 'from' in config:
-        eprint("ERROR No from email address specified")
+        logger.error("No from email address specified")
         return False
 
     return True
 
 if len(sys.argv) > 1 and sys.argv[1] == "--execute":
+    logger = setup_logging()
     alert = json.load(sys.stdin)
-    if check_inputs(alert['configuration']):
+    if check_inputs(alert['configuration'], logger):
         #load config
         config = alert['configuration']
         url = config['url']
@@ -54,11 +72,11 @@ if len(sys.argv) > 1 and sys.argv[1] == "--execute":
         #doit
         r = requests.post(url,auth=auth,data=data,verify=False)
         if r.status_code == 200:
-            eprint("INFO 200: Success sending email")
+            logger.info("200: Success sending email")
         else:
-            eprint("ERROR "+str(r.status_code)+": "+r.text)
+            logger.error(str(r.status_code)+": "+r.text)
 
     else:
-        eprint("ERROR Invalid configuration detected. Stopped.")
+        logger.error("Invalid configuration detected. Stopped.")
 else:
-    eprint("FATAL No execute flag given")
+    print("FATAL No execute flag given")
